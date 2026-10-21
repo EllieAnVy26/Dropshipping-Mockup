@@ -1,0 +1,583 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Products – Dropshipping Form Prototype</title>
+<style>
+:root{
+  --accent:#714b67; --link:#017e84; --link-dark:#01585c;
+  --ink:#1f2937; --ink-strong:#111827; --muted:#4b5563; --faint:#8a8f98;
+  --line:#e5e7eb; --line-strong:#d1d5db; --bg:#f1f3f5; --surface:#fff; --surface-alt:#f9fafb;
+  --chip-bg:#eef2f2; --chip-ink:#1f4f52;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:14px/1.4 -apple-system,"Segoe UI",system-ui,Ubuntu,"Noto Sans","Helvetica Neue",sans-serif}
+a{color:var(--link);text-decoration:none}a:hover{color:var(--link-dark)}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.hidden{display:none!important}
+
+/* ===== top chrome ===== */
+.banner{background:#d93025;color:#fff;text-align:center;font-size:13.5px;padding:5px 10px}
+.topbar{background:var(--accent);color:#fff;display:flex;flex-wrap:wrap;align-items:center;gap:4px 20px;padding:0 16px;min-height:46px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:15px}
+.topbar nav{display:flex;flex-wrap:wrap;gap:16px}
+.topbar nav a{color:#f3e9f0}.topbar nav a.on{color:#fff;font-weight:600}
+.topbar .right{margin-left:auto;font-size:13px;color:#f3e9f0}
+.cp{background:var(--surface);border-bottom:1px solid var(--line);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding:8px 16px}
+.cp-left{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.btn-primary{background:var(--accent);color:#fff;border:0;border-radius:4px;padding:0 14px;height:34px;font-weight:600;cursor:pointer}
+.btn-ghost{background:#fff;border:1px solid var(--line-strong);border-radius:4px;height:34px;padding:0 12px;font-size:13.5px;font-weight:600;color:#374151;cursor:pointer}
+.crumb{display:flex;align-items:center;gap:6px;font-size:15px}
+.crumb .sep{color:var(--faint)}
+.crumb button{background:none;border:0;padding:0;cursor:pointer;color:var(--link);font:inherit}
+.icon-btn{background:transparent;border:0;height:34px;width:34px;cursor:pointer;color:var(--muted);display:inline-flex;align-items:center;justify-content:center}
+
+/* ===== kanban ===== */
+.kwrap{max-width:1280px;margin:0 auto;padding:18px 16px 48px}
+.searchbar{display:flex;justify-content:center;margin-bottom:16px}
+.searchbox{display:flex;align-items:center;gap:8px;background:#fff;border:1px solid var(--line-strong);border-radius:999px;padding:6px 14px;min-width:min(480px,100%)}
+.facet{display:inline-flex;align-items:center;gap:6px;background:#ece6ea;border-radius:4px;padding:2px 8px;font-size:12.5px;font-weight:600;color:var(--accent)}
+.searchbox input{border:0;flex:1;font:inherit;min-width:60px}
+.searchbox input:focus{outline:none}
+.kgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.kcard{background:#fff;border:1px solid var(--line);border-radius:6px;padding:14px 16px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:6px}
+.kcard:hover{border-color:#b9bec6;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.kcard h3{margin:0;font-size:15px;color:var(--ink-strong)}
+.kcard .price{font-weight:600}
+.kcard .stock{font-size:12.5px;color:var(--faint)}
+.kcard .stock b{color:var(--ink)}
+
+/* ===== modal ===== */
+.overlay{position:fixed;inset:0;background:rgba(17,24,39,.45);display:flex;align-items:center;justify-content:center;padding:20px;z-index:50}
+.modal{background:#fff;border-radius:8px;max-width:560px;width:100%;padding:22px 24px;box-shadow:0 10px 40px rgba(0,0,0,.2)}
+.modal h2{margin:0 0 4px;font-size:17px;color:var(--ink-strong)}
+.modal p.sub{margin:0 0 16px;font-size:13px;color:var(--muted)}
+.tpl{display:flex;gap:14px;align-items:flex-start;width:100%;text-align:left;background:#fff;border:1px solid var(--line-strong);border-radius:8px;padding:14px 16px;cursor:pointer}
+.tpl:hover{border-color:var(--accent);background:#fbf7fa}
+.tpl .ic{flex:0 0 auto;width:42px;height:42px;border-radius:8px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center}
+.tpl b{display:block;font-size:14.5px;color:var(--ink-strong)}
+.tpl small{display:block;font-size:12.5px;color:var(--muted);margin-top:3px;line-height:1.45}
+.modal .foot{display:flex;justify-content:flex-end;margin-top:16px}
+
+/* ===== form ===== */
+.fwrap{max-width:1280px;margin:0 auto;padding:14px 16px 56px}
+.sheet{background:#fff;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.smart{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--line)}
+.smart>div{flex:1 1 150px;border-right:1px solid var(--line);padding:8px 14px;display:flex;gap:10px;align-items:center;font-size:12.5px;color:var(--muted)}
+.smart>div:last-child{border-right:0}
+.smart b{display:block;font-size:13px;color:var(--link)}
+.head{padding:18px 22px 0}
+.title-row{display:flex;gap:20px;align-items:flex-start;flex-wrap:wrap}
+.title-left{flex:999 1 420px;min-width:0}
+.pname{width:100%;border:0;border-bottom:1px solid transparent;font-size:26px;font-weight:500;color:var(--ink-strong);padding:2px 0}
+.pname::placeholder{color:#c3c7cd}
+.pname:hover,.pname:focus{border-bottom-color:var(--line-strong);outline:none}
+.cbrow{display:flex;gap:18px;margin:8px 0 2px;flex-wrap:wrap}
+.cb{display:inline-flex;align-items:center;gap:7px;font-weight:600;cursor:pointer}
+.cb input{width:15px;height:15px;accent-color:var(--accent)}
+.imgbox{flex:0 0 auto;width:96px;height:96px;border:1px solid var(--line);border-radius:6px;background:var(--surface-alt);color:#c3c7cd;display:flex;align-items:center;justify-content:center}
+
+/* tabs */
+.tabs{display:flex;flex-wrap:wrap;gap:0 2px;padding:12px 10px 0;border-bottom:1px solid var(--line)}
+.tabs button{background:transparent;border:1px solid transparent;border-bottom:0;border-radius:6px 6px 0 0;font-size:14px;cursor:pointer;padding:9px 14px;color:var(--link);margin-bottom:-1px}
+.tabs button[aria-selected="true"]{background:#fff;border-color:var(--line);color:var(--ink-strong);font-weight:600;box-shadow:inset 0 2px 0 var(--accent)}
+.tabbody{padding:20px 22px 26px}
+
+/* field rows, native style */
+.cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(330px,1fr));gap:8px 56px;align-items:start}
+.f{display:grid;grid-template-columns:150px minmax(0,1fr);align-items:center;column-gap:14px;min-height:34px}
+.f>label,.f>.lb{font-size:13.5px;font-weight:600;color:var(--ink-strong)}
+.f .q{color:var(--link);font-size:11px;vertical-align:super;margin-left:2px;font-weight:700}
+.inp{width:100%;border:0;border-bottom:1px solid transparent;background:transparent;padding:5px 0;font:inherit;color:var(--ink-strong)}
+.inp:hover{border-bottom-color:var(--line-strong)}
+.inp:focus{outline:none;border-bottom-color:var(--accent)}
+.inp::placeholder{color:#b7bcc3}
+.ta{width:100%;border:0;background:transparent;font:inherit;color:var(--ink-strong);resize:vertical;min-height:54px;padding:4px 0}
+.ta:focus{outline:none}
+.ta::placeholder{color:#b7bcc3}
+.sel{position:relative}
+.sel svg{position:absolute;right:0;top:50%;margin-top:-7px;pointer-events:none}
+.sect{margin:0 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line);font-size:13px;font-weight:700;color:var(--ink-strong);text-transform:uppercase;letter-spacing:.03em}
+.sect.mt{margin-top:26px}
+.radio{display:flex;gap:16px;flex-wrap:wrap}
+.radio label{display:inline-flex;gap:6px;align-items:center;cursor:pointer}
+.radio input{accent-color:var(--accent)}
+.radio.col{flex-direction:column;gap:8px;align-items:flex-start}
+.seg{display:inline-flex;flex-wrap:wrap;border:1px solid var(--line-strong);border-radius:6px;overflow:hidden;justify-self:start}
+.seg button{border:0;border-left:1px solid var(--line-strong);padding:0 14px;height:30px;font-size:13px;cursor:pointer;background:#fff;color:#374151;white-space:nowrap}
+.seg button:first-child{border-left:0}
+.seg button[aria-pressed="true"]{background:var(--accent);color:#fff;font-weight:600}
+.switch{background:transparent;border:0;padding:0;cursor:pointer;display:inline-flex;align-items:center;gap:9px;min-height:32px}
+.switch .trk{position:relative;display:inline-block;width:36px;height:20px;border-radius:999px;background:#9ca3af;transition:background .15s;flex:0 0 auto}
+.switch .trk::after{content:"";position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;transition:transform .15s}
+.switch[aria-pressed="true"] .trk{background:var(--accent)}
+.switch[aria-pressed="true"] .trk::after{transform:translateX(16px)}
+.switch.locked{cursor:default}.switch.locked .trk{opacity:.55}
+.switch .hint{font-size:13px;color:var(--muted)}
+.chip{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;background:var(--chip-bg);color:var(--chip-ink);font-size:12.5px;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:6px;align-items:center;min-height:30px}
+.lock{color:var(--faint)}
+.hintline{font-size:12.5px;color:var(--muted)}
+
+/* tables */
+.tbl{width:100%;border-collapse:collapse;font-size:13.5px}
+.tbl th{text-align:left;font-weight:700;color:var(--ink-strong);padding:8px 10px;border-bottom:1px solid var(--line-strong);white-space:nowrap}
+.tbl td{padding:3px 10px;border-bottom:1px solid #f0f1f3;vertical-align:middle}
+.tbl .num{text-align:right}
+.tblwrap{overflow-x:auto}
+.addline{background:none;border:0;color:var(--link);cursor:pointer;padding:9px 10px;display:inline-flex;gap:6px;align-items:center}
+.pref{font-size:11px;font-weight:700;color:#fff;background:var(--link);border-radius:4px;padding:2px 7px;white-space:nowrap}
+.del{background:transparent;border:0;color:var(--faint);width:32px;height:32px;cursor:pointer}
+.note{display:flex;gap:10px;align-items:center;padding:9px 13px;border-radius:6px;background:#f3f4f6;font-size:13px;color:#374151;margin-bottom:16px}
+.note .linkbtn{background:none;border:0;padding:0;font-weight:600;color:var(--link);cursor:pointer}
+
+@media (max-width:560px){
+  .f{grid-template-columns:1fr;row-gap:2px;padding:3px 0}
+  .tabbody{padding:16px 14px}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="banner">Database neutralized for testing: no emails sent, etc.</div>
+<header class="topbar">
+  <div class="brand">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/><path d="M12 13v8"/></svg>
+    Inventory
+  </div>
+  <nav aria-label="Main menu"><a href="#">Overview</a><a href="#">Operations</a><a href="#" class="on">Products</a><a href="#">Reporting</a><a href="#">Configuration</a></nav>
+  <div class="right">Associated Volume Buyers Inc</div>
+</header>
+
+<!-- ===================== KANBAN VIEW ===================== -->
+<div id="view-kanban">
+  <div class="cp">
+    <div class="cp-left">
+      <button type="button" class="btn-primary" id="btn-new">New</button>
+      <div class="crumb"><strong>Products</strong></div>
+    </div>
+    <div style="color:var(--muted);font-size:13px" id="kcount">1-6 / 6</div>
+  </div>
+  <div class="kwrap">
+    <div class="searchbar">
+      <div class="searchbox">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#6b7280" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <span class="facet">Goods ✕</span>
+        <label for="ksearch" class="sr">Search products</label>
+        <input id="ksearch" placeholder="Search...">
+      </div>
+    </div>
+    <div class="kgrid" id="kgrid"></div>
+  </div>
+</div>
+
+<!-- ===================== TEMPLATE MODAL ===================== -->
+<div class="overlay hidden" id="tpl-overlay" role="dialog" aria-modal="true" aria-labelledby="tpl-title">
+  <div class="modal">
+    <h2 id="tpl-title">New Product</h2>
+    <p class="sub">Choose a template to start from.</p>
+    <button type="button" class="tpl" id="tpl-dropship">
+      <span class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M1 3h15v13H1z"/><path d="M16 8h4l3 3v5h-7z"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></span>
+      <span><b>Dropshipping Product</b><small>Pre-configured for dropshipping: the Dropship route is set automatically and every field you need is on the first tab. Vendor ships straight to the customer.</small></span>
+    </button>
+    <div class="foot"><button type="button" class="btn-ghost" id="tpl-cancel">Cancel</button></div>
+  </div>
+</div>
+
+<!-- ===================== FORM VIEW ===================== -->
+<div id="view-form" class="hidden">
+  <div class="cp">
+    <div class="cp-left">
+      <button type="button" class="btn-primary">New</button>
+      <div class="crumb"><button type="button" id="back-to-list">Products</button><span class="sep">/</span><span id="crumb-name">New</span></div>
+      <button type="button" class="icon-btn" aria-label="Save" style="color:var(--accent)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3h11l5 5v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z"/><path d="M7 3v6h8"/><path d="M7 21v-7h10v7"/></svg></button>
+      <button type="button" class="icon-btn" aria-label="Discard" id="discard"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6L6 18M6 6l12 12"/></svg></button>
+    </div>
+  </div>
+
+  <div class="fwrap">
+    <div class="sheet">
+      <div class="smart">
+        <div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d93025" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8M3.6 15h16.8"/><path d="M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"/></svg><span><b>Go to Website</b></span></div>
+        <div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><path d="M14 3v6h6"/></svg><span><b>Documents</b>0</span></div>
+        <div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 8l-9-5-9 5 9 5 9-5z"/><path d="M3 8v8l9 5 9-5V8"/></svg><span><b>0 Units</b>0 Incoming</span></div>
+        <div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M3 3v18h18"/><path d="M7 15l4-4 3 3 5-6"/></svg><span><b>0 Units</b>0 Outgoing</span></div>
+        <div><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4b5563" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12h4l3 8 4-16 3 8h4"/></svg><span><b>More</b>▾</span></div>
+      </div>
+
+      <div class="head">
+        <div class="title-row">
+          <div class="title-left">
+            <div style="display:flex;align-items:center;gap:10px">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4 6.1 20.5l1.2-6.5L2.5 9.4l6.6-.9z"/></svg>
+              <label for="pname" class="sr">Product name</label>
+              <input id="pname" class="pname" placeholder="e.g. Cheese Burger">
+            </div>
+            <div class="cbrow">
+              <label class="cb"><input type="checkbox" checked> Sales</label>
+              <label class="cb"><input type="checkbox" checked> Purchase</label>
+            </div>
+          </div>
+          <div class="imgbox"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h3l2-3h6l2 3h3a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="4"/><path d="M19 5v-2M18 4h2" stroke-width="2"/></svg></div>
+        </div>
+
+        <div class="tabs" role="tablist" aria-label="Product form tabs">
+          <button type="button" role="tab" data-tab="dropship" aria-selected="true">Dropshipping</button>
+          <button type="button" role="tab" data-tab="var" aria-selected="false">Attributes &amp; Variants</button>
+          <button type="button" role="tab" data-tab="sales" aria-selected="false">Sales</button>
+          <button type="button" role="tab" data-tab="prices" aria-selected="false">Prices</button>
+          <button type="button" role="tab" data-tab="purchase" aria-selected="false">Purchase</button>
+          <button type="button" role="tab" data-tab="inv" aria-selected="false">Inventory</button>
+          <button type="button" role="tab" data-tab="acc" aria-selected="false">Accounting</button>
+          <button type="button" role="tab" data-tab="sf" aria-selected="false">Salesforce</button>
+          <button type="button" role="tab" data-tab="ecom" aria-selected="false">eCommerce</button>
+        </div>
+      </div>
+
+      <!-- ========== TAB: DROPSHIPPING ========== -->
+      <div class="tabbody" data-pane="dropship">
+        <div class="cols">
+          <div>
+            <div class="f"><span class="lb">Product Type<span class="q">?</span></span>
+              <div class="radio" role="radiogroup" aria-label="Product type">
+                <label><input type="radio" name="ptype" value="goods" checked> Goods</label>
+                <label><input type="radio" name="ptype" value="service"> Service</label>
+                <label><input type="radio" name="ptype" value="combo"> Combo</label>
+              </div>
+            </div>
+            <div class="f" data-goods><span class="lb">Tracking<span class="q">?</span></span>
+              <div style="display:flex;flex-wrap:wrap;gap:8px 12px;align-items:center">
+                <div class="seg" role="group" aria-label="Inventory tracking" data-seg="tracking">
+                  <button type="button" data-val="qty" aria-pressed="true">By Quantity</button>
+                  <button type="button" data-val="serial" aria-pressed="false">By Serial Number</button>
+                  <button type="button" data-val="none" aria-pressed="false">None</button>
+                </div>
+                <span class="hintline" id="track-hint"></span>
+              </div>
+            </div>
+            <div class="f" data-goods><span class="lb">Dropshipping<span class="q">?</span></span>
+              <span class="switch locked" aria-pressed="true" title="Set by the Dropshipping Product template">
+                <span class="trk"></span><span class="hint">Enabled automatically</span>
+                <svg class="lock" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Read only"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+              </span>
+            </div>
+            <div class="f"><label for="brand">Brand</label><div class="sel"><input id="brand" class="inp" placeholder="Select a brand"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div></div>
+            <div class="f"><label for="model">Model</label><input id="model" class="inp" placeholder="e.g. EC-500"></div>
+            <div class="f"><label for="resp">Responsible<span class="q">?</span></label><div class="sel"><input id="resp" class="inp" value="Administrator"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div></div>
+          </div>
+          <div>
+            <div class="f"><label for="sp">Sales Price<span class="q">?</span></label><div style="display:flex;gap:8px;align-items:baseline"><input id="sp" class="inp" value="$ 1.00" style="max-width:140px"><span class="hintline">per Units</span></div></div>
+            <div class="f"><span class="lb">Sales Taxes<span class="q">?</span></span><div class="chips"><span class="chip">15% VAT</span></div></div>
+            <div class="f"><label for="cost">Cost<span class="q">?</span></label><div style="display:flex;gap:8px;align-items:baseline"><input id="cost" class="inp" value="$ 0.00" style="max-width:140px"><span class="hintline">per Units</span></div></div>
+            <div class="f"><span class="lb">Purchase Taxes<span class="q">?</span></span><div class="chips"><span class="chip">15% VAT (Purchase)</span></div></div>
+            <div class="f"><label for="cat">Category</label><div class="sel"><input id="cat" class="inp" value="All / Saleable"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div></div>
+            <div class="f"><label for="ref">Reference</label><input id="ref" class="inp" placeholder=""></div>
+            <div class="f"><label for="bar">Barcode</label><input id="bar" class="inp" placeholder=""></div>
+          </div>
+        </div>
+
+        <h3 class="sect mt">Vendors</h3>
+        <p class="hintline" style="margin:0 0 6px">First row is the preferred vendor: each confirmed sales order creates an RFQ to this vendor, who ships directly to the customer.</p>
+        <div class="tblwrap">
+          <table class="tbl" style="min-width:720px">
+            <thead><tr><th>Vendor</th><th>Vendor Product Code</th><th class="num">Min. Qty</th><th class="num">Unit Price</th><th class="num">Lead Time</th><th><span class="sr">Remove</span></th></tr></thead>
+            <tbody id="vendor-rows"></tbody>
+          </table>
+        </div>
+        <button type="button" class="addline" id="add-vendor">Add a line</button>
+      </div>
+
+      <!-- ========== TAB: ATTRIBUTES & VARIANTS ========== -->
+      <div class="tabbody hidden" data-pane="var">
+        <div class="tblwrap">
+          <table class="tbl" style="min-width:520px">
+            <thead><tr><th style="width:240px">Attribute</th><th>Values</th><th><span class="sr">Remove</span></th></tr></thead>
+            <tbody id="attr-rows"></tbody>
+          </table>
+        </div>
+        <button type="button" class="addline" id="add-attr">Add a line</button>
+      </div>
+
+      <!-- ========== TAB: SALES ========== -->
+      <div class="tabbody hidden" data-pane="sales">
+        <div class="cols">
+          <div>
+            <h3 class="sect">Upsell &amp; Cross-sell</h3>
+            <div class="f"><span class="lb">Packagings<span class="q">?</span></span><input class="inp" aria-label="Packagings" placeholder=""></div>
+            <div class="f"><span class="lb">Optional Products<span class="q">?</span></span><input class="inp" aria-label="Optional products" placeholder="Recommend when 'Adding to Cart' or quotation"></div>
+            <div class="f"><span class="lb">Accessory Products<span class="q">?</span></span><input class="inp" aria-label="Accessory products" placeholder="Suggested accessories in the eCommerce cart"></div>
+            <div class="f"><span class="lb">Alternative Products<span class="q">?</span></span><input class="inp" aria-label="Alternative products" placeholder="Displayed in bottom of product pages"></div>
+            <h3 class="sect mt">Expenses, Services &amp; Materials</h3>
+            <div class="f" style="align-items:start"><span class="lb" style="padding-top:4px">Re-Invoice Costs<span class="q">?</span></span>
+              <div class="radio col">
+                <label><input type="radio" name="reinv" checked> No</label>
+                <label><input type="radio" name="reinv"> At cost</label>
+                <label><input type="radio" name="reinv"> At Sales price</label>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h3 class="sect">Short Description</h3>
+            <textarea class="ta" aria-label="Short description" placeholder="This note is added to sales orders, invoices, eCommerce listing and SEO descriptions."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== TAB: PRICES ========== -->
+      <div class="tabbody hidden" data-pane="prices">
+        <div class="tblwrap">
+          <table class="tbl" style="min-width:620px">
+            <thead><tr><th>Pricelist</th><th class="num">Min. Quantity</th><th>Packaging</th><th class="num">Unit Price</th><th><span class="sr">Remove</span></th></tr></thead>
+            <tbody id="price-rows"></tbody>
+          </table>
+        </div>
+        <button type="button" class="addline" id="add-price">Add a price</button>
+      </div>
+
+      <!-- ========== TAB: PURCHASE ========== -->
+      <div class="tabbody hidden" data-pane="purchase">
+        <div class="note">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true" style="flex:0 0 auto"><circle cx="12" cy="12" r="9"/><path d="M12 11v5"/><path d="M12 8h.01"/></svg>
+          <span>Vendors and vendor prices are on the <button type="button" class="linkbtn" data-goto="dropship">Dropshipping</button> tab.</span>
+        </div>
+        <div class="cols">
+          <div>
+            <h3 class="sect">Vendor Bills</h3>
+            <div class="f" style="align-items:start"><span class="lb" style="padding-top:4px">Control Policy<span class="q">?</span></span>
+              <div class="radio col">
+                <label><input type="radio" name="ctl"> On ordered quantities</label>
+                <label><input type="radio" name="ctl" checked> On received quantities</label>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h3 class="sect">Purchase Description</h3>
+            <textarea class="ta" aria-label="Purchase description" placeholder="This note is added to purchase orders."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== TAB: INVENTORY ========== -->
+      <div class="tabbody hidden" data-pane="inv">
+        <div class="cols">
+          <div>
+            <h3 class="sect">Operations</h3>
+            <div class="f" style="align-items:start"><span class="lb" style="padding-top:4px">Routes<span class="q">?</span></span>
+              <div>
+                <div class="radio col" style="gap:6px">
+                  <label style="cursor:default"><input type="checkbox" disabled> Replenish on Order (MTO)</label>
+                  <label style="cursor:default"><input type="checkbox" checked disabled> Dropship
+                    <svg class="lock" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" role="img" aria-label="Set by template"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>
+                  </label>
+                </div>
+                <p class="hintline" style="margin:6px 0 0">Set by the Dropshipping Product template.</p>
+              </div>
+            </div>
+          </div>
+          <div>
+            <h3 class="sect">Logistics</h3>
+            <div class="f"><label for="wt">Weight</label><div style="display:flex;gap:8px;align-items:baseline"><input id="wt" class="inp" value="0.00" style="max-width:120px"><span class="hintline">kg</span></div></div>
+            <div class="f"><label for="vol">Volume</label><div style="display:flex;gap:8px;align-items:baseline"><input id="vol" class="inp" value="0.00" style="max-width:120px"><span class="hintline">m³</span></div></div>
+            <div class="f"><label for="dtime">Delivery Time<span class="q">?</span></label><div style="display:flex;gap:8px;align-items:baseline"><input id="dtime" class="inp" value="0" style="max-width:120px"><span class="hintline">days</span></div></div>
+          </div>
+        </div>
+        <div class="cols" style="margin-top:26px">
+          <div><h3 class="sect">Description for Receipts</h3><textarea class="ta" aria-label="Description for receipts" placeholder="This note is added to receipt orders (e.g. where to store the product in the warehouse)."></textarea></div>
+          <div><h3 class="sect">Description for Delivery Orders</h3><textarea class="ta" aria-label="Description for delivery orders" placeholder="This note is added to delivery orders."></textarea></div>
+          <div><h3 class="sect">Description for Internal Transfers</h3><textarea class="ta" aria-label="Description for internal transfers" placeholder="This note is added to internal transfer orders (e.g. where to pick the product in the warehouse)."></textarea></div>
+        </div>
+      </div>
+
+      <!-- ========== TAB: ACCOUNTING ========== -->
+      <div class="tabbody hidden" data-pane="acc">
+        <div class="cols">
+          <div>
+            <h3 class="sect">Cost and Revenue</h3>
+            <div class="f"><label for="inc">Income Account<span class="q">?</span></label><input id="inc" class="inp" placeholder="From Category"></div>
+            <div class="f"><label for="exp">Expense Account<span class="q">?</span></label><input id="exp" class="inp" placeholder="From Category"></div>
+          </div>
+          <div>
+            <h3 class="sect">Cut-offs</h3>
+            <div class="f"><span class="lb">Must Have Start/End Dates<span class="q">?</span></span><label class="cb" style="font-weight:400"><input type="checkbox"><span class="sr">Must have start and end dates</span></label></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== TAB: SALESFORCE ========== -->
+      <div class="tabbody hidden" data-pane="sf">
+        <div class="cols">
+          <div>
+            <h3 class="sect">Identity</h3>
+            <div class="f"><span class="lb">SF Product ID<span class="q">?</span></span><input class="inp" aria-label="SF product ID"></div>
+            <div class="f"><span class="lb">SF Product Code</span><input class="inp" aria-label="SF product code"></div>
+            <div class="f"><span class="lb">SF Record Type</span><input class="inp" aria-label="SF record type"></div>
+            <div class="f"><span class="lb">SF Transaction Type</span><input class="inp" aria-label="SF transaction type"></div>
+            <div class="f"><span class="lb">SF Tactic</span><input class="inp" aria-label="SF tactic"></div>
+            <h3 class="sect mt">Sync Runtime</h3>
+            <div class="f"><span class="lb">First Synced At</span><input class="inp" aria-label="First synced at" readonly></div>
+            <div class="f"><span class="lb">Last Synced At</span><input class="inp" aria-label="Last synced at" readonly></div>
+            <div class="f"><span class="lb">Sync Status</span><input class="inp" aria-label="Sync status" readonly></div>
+          </div>
+          <div>
+            <h3 class="sect">SF Audit</h3>
+            <div class="f"><span class="lb">SF Created Date</span><input class="inp" aria-label="SF created date" readonly></div>
+            <div class="f"><span class="lb">SF Created By</span><input class="inp" aria-label="SF created by" readonly></div>
+            <div class="f"><span class="lb">SF Last Modified Date</span><input class="inp" aria-label="SF last modified date" readonly></div>
+            <h3 class="sect mt">Cost &amp; Support</h3>
+            <div class="f"><span class="lb">SF Support Hours</span><input class="inp" aria-label="SF support hours" value="0.00" style="max-width:120px"></div>
+            <div class="f"><span class="lb">SF Landing Cost</span><input class="inp" aria-label="SF landing cost" value="$ 0.00" style="max-width:120px"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== TAB: ECOMMERCE ========== -->
+      <div class="tabbody hidden" data-pane="ecom">
+        <div class="cols">
+          <div>
+            <h3 class="sect">eCommerce Shop</h3>
+            <div class="f"><span class="lb">Is Published</span>
+              <button type="button" class="switch" data-toggle="published" aria-pressed="false" aria-label="Is published" style="justify-self:start"><span class="trk"></span><span class="hint" id="published-text">Not published</span></button>
+            </div>
+            <div class="f"><label for="web">Website<span class="q">?</span></label><div class="sel"><input id="web" class="inp" placeholder="All"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#9ca3af" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg></div></div>
+            <div class="f"><span class="lb">Categories<span class="q">?</span></span><input class="inp" aria-label="eCommerce categories" placeholder=""></div>
+          </div>
+          <div>
+            <h3 class="sect">eCommerce Media</h3>
+            <button type="button" class="btn-ghost">Add Media</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  var state = {
+    tracking: 'qty', published: false, nextId: 100,
+    vendors: [],
+    attrs: [],
+    prices: []
+  };
+  var trackHints = { qty: 'Stock is tracked as a quantity', serial: 'Each unit needs a unique serial number', none: 'Stock is not tracked' };
+  var kproducts = [
+    { name: 'Convenience Fee', price: '$ 0.00', stock: null },
+    { name: 'Demo Prod 1 - King Mattress', price: '$ 500.00', stock: '0 Units' },
+    { name: 'Demo Prod 2 - Washer', price: '$ 1,000.00', stock: '0 Units' },
+    { name: 'Demo Prod 3 - Surprise Appliance Dropship', price: '$ 3,500.00', stock: '0 Units' },
+    { name: 'test', price: '$ 0.00', stock: null },
+    { name: 'TEST PRODUCT', price: '$ 30.00', stock: null }
+  ];
+  var $ = function (s) { return document.querySelector(s); };
+  var $$ = function (s) { return Array.prototype.slice.call(document.querySelectorAll(s)); };
+  var esc = function (v) { return String(v).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); };
+  var trash = '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M19 6l-1 14H6L5 6"/></svg>';
+
+  /* kanban */
+  function renderKanban(filter) {
+    var q = (filter || '').toLowerCase();
+    $('#kgrid').innerHTML = kproducts.filter(function (p) { return p.name.toLowerCase().indexOf(q) !== -1; }).map(function (p) {
+      return '<button type="button" class="kcard" data-open-form="1"><h3>' + esc(p.name) + '</h3>' +
+        '<span class="price">' + esc(p.price) + '</span>' +
+        (p.stock ? '<span class="stock"><b>' + esc(p.stock) + '</b> On Hand</span>' : '') + '</button>';
+    }).join('');
+  }
+
+  /* form tables */
+  function renderVendors() {
+    $('#vendor-rows').innerHTML = state.vendors.map(function (v, i) {
+      return '<tr><td><div style="display:flex;align-items:center;gap:8px">' +
+        '<input class="inp" aria-label="Vendor" value="' + esc(v.name) + '" placeholder="Select a vendor" style="min-width:150px">' +
+        (i === 0 ? '<span class="pref">Preferred</span>' : '') + '</div></td>' +
+        '<td><input class="inp" aria-label="Vendor product code" value="' + esc(v.code) + '" placeholder=""></td>' +
+        '<td><input class="inp num" aria-label="Minimum quantity" value="' + esc(v.min) + '"></td>' +
+        '<td><input class="inp num" aria-label="Unit price" value="' + esc(v.price) + '"></td>' +
+        '<td><input class="inp num" aria-label="Lead time" value="' + esc(v.lead) + '"></td>' +
+        '<td style="width:40px"><button type="button" class="del" aria-label="Remove vendor" data-del-vendor="' + v.id + '">' + trash + '</button></td></tr>';
+    }).join('') || '<tr><td colspan="6" style="color:var(--faint);padding:9px 10px">No vendor yet — add the dropship vendor below.</td></tr>';
+  }
+  function renderAttrs() {
+    $('#attr-rows').innerHTML = state.attrs.map(function (a) {
+      return '<tr><td><input class="inp" aria-label="Attribute" value="' + esc(a.name) + '" placeholder="Select an attribute"></td>' +
+        '<td><input class="inp" aria-label="Values" value="' + esc(a.values) + '" placeholder=""></td>' +
+        '<td style="width:40px"><button type="button" class="del" aria-label="Remove attribute" data-del-attr="' + a.id + '">' + trash + '</button></td></tr>';
+    }).join('');
+  }
+  function renderPrices() {
+    $('#price-rows').innerHTML = state.prices.map(function (p) {
+      return '<tr><td><input class="inp" aria-label="Pricelist" value="' + esc(p.list) + '" placeholder="Public Pricelist"></td>' +
+        '<td><input class="inp num" aria-label="Minimum quantity" value="' + esc(p.min) + '"></td>' +
+        '<td><input class="inp" aria-label="Packaging" value=""></td>' +
+        '<td><input class="inp num" aria-label="Unit price" value="' + esc(p.price) + '"></td>' +
+        '<td style="width:40px"><button type="button" class="del" aria-label="Remove price" data-del-price="' + p.id + '">' + trash + '</button></td></tr>';
+    }).join('');
+  }
+
+  function update() {
+    $('#track-hint').textContent = trackHints[state.tracking];
+    $$('[data-seg="tracking"] button').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.val === state.tracking ? 'true' : 'false'); });
+    $$('[data-toggle]').forEach(function (b) { b.setAttribute('aria-pressed', state[b.dataset.toggle] ? 'true' : 'false'); });
+    $('#published-text').textContent = state.published ? 'Visible on the website' : 'Not published';
+    var goods = document.querySelector('input[name="ptype"]:checked').value === 'goods';
+    $$('[data-goods]').forEach(function (el) { el.classList.toggle('hidden', !goods); });
+  }
+  function showTab(id) {
+    $$('.tabs [data-tab]').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.tab === id ? 'true' : 'false'); });
+    $$('[data-pane]').forEach(function (p) { p.classList.toggle('hidden', p.dataset.pane !== id); });
+  }
+  function showView(v) {
+    $('#view-kanban').classList.toggle('hidden', v !== 'kanban');
+    $('#view-form').classList.toggle('hidden', v !== 'form');
+    window.scrollTo(0, 0);
+  }
+  function openForm(name) {
+    $('#crumb-name').textContent = name || 'New';
+    $('#pname').value = name || '';
+    showTab('dropship');
+    showView('form');
+  }
+
+  document.addEventListener('click', function (e) {
+    var t = e.target.closest('button');
+    if (!t) return;
+    if (t.id === 'btn-new') { $('#tpl-overlay').classList.remove('hidden'); return; }
+    if (t.id === 'tpl-cancel') { $('#tpl-overlay').classList.add('hidden'); return; }
+    if (t.id === 'tpl-dropship') { $('#tpl-overlay').classList.add('hidden'); openForm(''); return; }
+    if (t.dataset.openForm) { openForm(t.querySelector('h3').textContent); return; }
+    if (t.id === 'back-to-list' || t.id === 'discard') { showView('kanban'); return; }
+    if (t.dataset.tab) { showTab(t.dataset.tab); return; }
+    if (t.dataset.goto) { showTab(t.dataset.goto); return; }
+    if (t.dataset.toggle) { state[t.dataset.toggle] = !state[t.dataset.toggle]; update(); return; }
+    if (t.parentNode && t.parentNode.dataset && t.parentNode.dataset.seg === 'tracking') { state.tracking = t.dataset.val; update(); return; }
+    if (t.id === 'add-vendor') { state.vendors.push({ id: state.nextId++, name: '', code: '', min: '1.00', price: '0.00', lead: '0 days' }); renderVendors(); return; }
+    if (t.dataset.delVendor) { state.vendors = state.vendors.filter(function (v) { return v.id !== +t.dataset.delVendor; }); renderVendors(); return; }
+    if (t.id === 'add-attr') { state.attrs.push({ id: state.nextId++, name: '', values: '' }); renderAttrs(); return; }
+    if (t.dataset.delAttr) { state.attrs = state.attrs.filter(function (a) { return a.id !== +t.dataset.delAttr; }); renderAttrs(); return; }
+    if (t.id === 'add-price') { state.prices.push({ id: state.nextId++, list: '', min: '1.00', price: '0.00' }); renderPrices(); return; }
+    if (t.dataset.delPrice) { state.prices = state.prices.filter(function (p) { return p.id !== +t.dataset.delPrice; }); renderPrices(); return; }
+  });
+  document.addEventListener('change', function (e) {
+    if (e.target.name === 'ptype') update();
+  });
+  document.addEventListener('keydown', function (e) {
+    if (e.key === 'Escape') $('#tpl-overlay').classList.add('hidden');
+  });
+  $('#ksearch').addEventListener('input', function (e) { renderKanban(e.target.value); });
+  $('#pname').addEventListener('input', function (e) { $('#crumb-name').textContent = e.target.value || 'New'; });
+
+  renderKanban('');
+  renderVendors();
+  renderAttrs();
+  renderPrices();
+  update();
+})();
+</script>
+</body>
+</html>
